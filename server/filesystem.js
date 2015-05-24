@@ -12,14 +12,28 @@ var readFile = function(filename, callback) {
   });
 }
 var readAllFiles = function(filenames) {
+  console.log("Reading all files in directory");
   _.each(filenames, function(filename) {
-    readFile(filename, function(content) {
-      console.log("== file ==");
-      console.log(filename);
-      console.log(content);
-    });
+    readFile(filename, Meteor.bindEnvironment(function(content) {
+      blogposts[filename] = hashStr(content);
+      FileHandler.handleFileAddition(filename, content);
+    }));
   });
 }
+var hashStr = function(str) {
+  return (function() {
+    // http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+    var hash = 0, i, chr, len;
+    if (this.length == 0) return hash;
+    for (i = 0, len = this.length; i < len; i++) {
+      chr   = this.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+  }).apply(str);
+};
+
 var prCntnt = function(content) {
   if (content) {
     return content.replace('\n', '');
@@ -52,15 +66,15 @@ Meteor.startup(function () {
       }
       var id=Meteor.setTimeout(function(){
         readTimers[filename] = undefined;
-        readFile(filename, function(content) {
-          console.log("( event " + filename + ", " + event + " : " + prCntnt(content) + ")");
+        readFile(filename, Meteor.bindEnvironment(function(content) {
+          console.log('( FileEvent "' + filename + '", "' + event + '" : "' + prCntnt(content) + '")');
           if (content) {
-            var old_content = blogposts[filename];
-            console.log(prCntnt(old_content) +  ">>>" + prCntnt(content));
-            if (content !== old_content) {
+            var old_hash = blogposts[filename];
+            console.log(old_hash +  ">>>" + hashStr(content));
+            if (hashStr(content) !== old_hash) {
               console.log("diff found");
-              blogposts[filename] = content;
-              if (old_content) {
+              blogposts[filename] = hashStr(content);
+              if (old_hash) {
                 FileHandler.handleFileRemoval(filename);
               }
               FileHandler.handleFileAddition(filename, content);
@@ -71,9 +85,7 @@ Meteor.startup(function () {
               FileHandler.handleFileRemoval(filename);
             }
           }
-          if (content != null) {
-          }
-        });
+        }));
       }, FILE_EVENT_DELAY);
       readTimers[filename] = id;
     }));
