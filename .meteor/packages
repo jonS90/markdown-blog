@@ -7,6 +7,6 @@
 meteor-platform
 autopublish
 insecure
-bootstrap
 mquandalle:bower
 iron:router
+materialize:materialize
