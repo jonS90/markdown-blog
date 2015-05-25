@@ -17,7 +17,8 @@ Router.route('/post/:filename', function() {
   var header = BlogHeaders.findOne({filename: this.params.filename});
   if (header) {
     console.log('routing to ' + header.filename);
-    var converter = new Showdown.converter();
+    var converter = new Showdown.converter({extensions: ['mine']});
+
     var data = header;
     var body = BlogBodies.findOne({filename: this.params.filename});
     data.content = converter.makeHtml(body.content);
