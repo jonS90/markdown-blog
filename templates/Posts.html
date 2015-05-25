@@ -1,0 +1,14 @@
+<template name='AllPostsTemplate'>
+  <h3>All yer posts be here</h3>
+  <ul>
+  {{#each headers}}
+    {{> header}}
+  {{/each}}
+  </ul>
+</template>
+
+<template name='header'>
+  <li>
+    <a href="/post/{{filename}}">{{filename}}</a>
+  </li>
+</template>
