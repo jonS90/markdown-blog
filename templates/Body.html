@@ -1,0 +1,31 @@
+<body>
+  <div class="navbar-fixed">
+    <nav class="blue darken-4">
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo">Logo</a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="/posts">All posts</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+<script>
+  $(window).scroll(function handleScroll() {
+    var scrollTop = $(document).scrollTop();
+    if (scrollTop > handleScroll.lastScrollTop) {
+      if (!handleScroll.isHidden) {
+        console.log('hide');
+        handleScroll.isHidden = true;
+        $('.navbar-fixed').stop().animate({opacity:0}, 200);
+      }
+    } else {
+      if (handleScroll.isHidden) {
+        console.log('show');
+        handleScroll.isHidden = false;
+        $('.navbar-fixed').stop().animate({opacity:1}, 800);
+      }
+    }
+    handleScroll.lastScrollTop = scrollTop;
+  });
+</script>
+</body>
